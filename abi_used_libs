@@ -1,0 +1,6 @@
+libc.so.6
+libefiboot.so.1
+libefivar.so.1
+libpopt.so.0
+libpthread.so.0
+libsmbios_c.so.2

@@ -1,0 +1,37 @@
+name       : fwupdate
+version    : '9'
+release    : 1
+source     :
+    - https://github.com/rhboot/fwupdate/releases/download/9/fwupdate-9.tar.bz2 : e926a7b33a58f5dbf029a5a687375e88b18a41f0742ba871aff7d1d82d075c87
+license    : GPL-2.0
+component  : system.boot
+summary    : Tools for using the ESRT and UpdateCapsule() to apply firmware updates
+description: |
+    Tools for using the ESRT and UpdateCapsule() to apply firmware updates
+patterns   :
+    - devel: 
+      - /usr/share/man/man3/
+builddeps  :
+    - pkgconfig(efivar)
+    - pkgconfig(libsmbios_c)
+    - pkgconfig(popt)
+    - gnu-efi-devel
+setup      : |
+    %patch -p1 < $pkgfiles/fix-uninitialized-variable.patch
+    %patch -p1 < $pkgfiles/fix-sprintf-formatting.patch
+build      : |
+    export EFIDIR=$workdir/arch
+    %make GNUEFIDIR=/usr/lib
+install    : | 
+    %make_install EFIDIR=/
+
+    # Don't install to actual $EFIDIR
+    install -d $installdir/%libdir%/fwupdate/
+    mv $installdir/boot/efi/EFI/ $installdir/%libdir%/fwupdate/
+    rm -fr $installdir/boot
+
+    # Cleanup
+    rm -fr $installdir/usr/src
+    rm -fr $installdir/usr/lib/debug
+    rm -fr $installdir/usr/share/fwupdate
+    rm -fr $installdir/usr/lib64/fwupdate/fw
